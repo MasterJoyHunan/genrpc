@@ -41,23 +41,18 @@ func Setup() {
 	proto.Walk(
 		GrpcParse,
 		proto.WithImport(func(i *proto.Import) {
-			fmt.Println("proto.Import")
 			GrpcProto.Import = i
 		}),
 		proto.WithMessage(func(message *proto.Message) {
-			fmt.Println("proto.Message")
 			GrpcProto.Message = append(GrpcProto.Message, message)
 		}),
 		proto.WithPackage(func(p *proto.Package) {
-			fmt.Println("proto.Package")
 			GrpcProto.Package = p
 		}),
 		proto.WithService(func(service *proto.Service) {
-			fmt.Println("proto.Service")
 			GrpcProto.Service = service
 		}),
 		proto.WithOption(func(option *proto.Option) {
-			fmt.Println("proto.Option")
 			if option.Name == "go_package" {
 				GrpcProto.GoPackage = option.Constant.Source
 			}
