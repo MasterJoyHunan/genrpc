@@ -1,6 +1,7 @@
 package prepare
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -14,6 +15,11 @@ var (
 		Short: "生成 GRPC 的项目结构",
 		Args:  cobra.ArbitraryArgs,
 		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Println("请输入proto文件")
+				os.Exit(1)
+				return
+			}
 			ProtoFile = args[0]
 		},
 	}
