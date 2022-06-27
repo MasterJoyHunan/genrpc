@@ -7,6 +7,7 @@ import (
 
 func main() {
 	prepare.Setup()
+	Must(generator.GenPB())
 	Must(generator.GenEtc())
 	Must(generator.GenConfig())
 	Must(generator.GenMain())

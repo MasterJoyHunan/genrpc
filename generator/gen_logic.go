@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
 	"path"
 	"strings"
 
@@ -34,13 +35,20 @@ func genLogicByRpc(rpc *proto.RPC) error {
 	pbDir := path.Join(RootPkg, GrpcProto.GoPackage)
 	pbPkg := path.Base(pbDir)
 
+	fmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
+	if err != nil {
+		return err
+	}
+	dirPath := pathx.JoinPackages(logicDir, fmtName)
+
 	return genFile(fileGenConfig{
 		dir:             GrpcOutDir,
-		subDir:          logicDir,
+		subDir:          dirPath,
 		filename:        filename + ".go",
 		templateName:    "logicTemplate",
 		builtinTemplate: tpl.LogicTemplate,
 		data: map[string]interface{}{
+			"pkgName":  fmtName[strings.LastIndex(fmtName, "/")+1:],
 			"imports":  fmt.Sprintf("\"%s\"", pbDir),
 			"function": util.Title(strings.TrimSuffix(logic, "Logic")),
 			"request":  fmt.Sprintf("%s.%s", pbPkg, rpc.RequestType),
