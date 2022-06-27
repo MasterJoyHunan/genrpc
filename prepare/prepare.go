@@ -28,12 +28,14 @@ func Setup() {
 	abs, err := filepath.Abs(ProtoFile)
 	r, err := os.Open(abs)
 	if err != nil {
-		panic(err)
+		fmt.Println("无法找到文件")
+		os.Exit(1)
 	}
 	parser := proto.NewParser(r)
 	GrpcParse, err := parser.Parse()
 	if err != nil {
-		panic(err)
+		fmt.Println("无法解析proto文件")
+		os.Exit(1)
 	}
 
 	proto.Walk(
@@ -69,7 +71,6 @@ func Setup() {
 }
 
 func GetParentPackage(dir string) (string, error) {
-
 	abs, err := filepath.Abs(dir)
 	if err != nil {
 		return "", err

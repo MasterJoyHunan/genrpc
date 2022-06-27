@@ -2,8 +2,9 @@ package prepare
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -18,7 +19,6 @@ var (
 			if len(args) != 1 {
 				fmt.Println("请输入proto文件")
 				os.Exit(1)
-				return
 			}
 			ProtoFile = args[0]
 		},
