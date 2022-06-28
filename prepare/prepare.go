@@ -25,6 +25,11 @@ type Proto struct {
 }
 
 func Setup() {
+	err := rootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
+	
 	abs, err := filepath.Abs(ProtoFile)
 	r, err := os.Open(abs)
 	if err != nil {
