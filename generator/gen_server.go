@@ -17,7 +17,10 @@ func GenServer() error {
 	pbDir := path.Join(RootPkg, GrpcProto.GoPackage)
 	pbPkg := path.Base(pbDir)
 
-	fmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
+	serverFmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
+	logicPath := pathx.JoinPackages(RootPkg, logicPacket, serverFmtName)
+	logicPkg := logicPath[strings.LastIndex(logicPath, "/")+1:]
+	logicPkgAlias := logicPkg + "Logic"
 	if err != nil {
 		return err
 	}
@@ -29,10 +32,10 @@ func GenServer() error {
 		templateName:    "serverTemplate",
 		builtinTemplate: tpl.ServerTemplate,
 		data: map[string]interface{}{
-			"importPackages": genServerImport(pbDir, fmtName),
+			"importPackages": genServerImport(pbDir, logicPath, logicPkgAlias),
 			"pbPkg":          pbPkg,
 			"serverName":     GrpcProto.Service.Name,
-			"func":           genFunc(pbPkg, fmtName[strings.LastIndex(fmtName, "/")+1:]),
+			"func":           genFunc(pbPkg, logicPkgAlias),
 		},
 	})
 	if err != nil {
@@ -60,13 +63,12 @@ func (s *%sServer) %s (ctx context.Context, req *%s) (*%s, error) {
 	return sb.String()
 }
 
-func genServerImport(pbDir, logicPath string) string {
+func genServerImport(pbDir, logicPath, logicPkg string) string {
 	importSet := collection.NewSet()
 	// pb pkg
 	importSet.AddStr(fmt.Sprintf("\"%s\"", pbDir))
 	// logic pkg
-	logicDir := pathx.JoinPackages(RootPkg, logicPath)
-	importSet.AddStr(fmt.Sprintf("\"%s\"", logicDir))
+	importSet.AddStr(fmt.Sprintf("%s \"%s\"", logicPkg, logicPath))
 
 	imports := importSet.KeysStr()
 	sort.Strings(imports)
