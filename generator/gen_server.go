@@ -89,7 +89,7 @@ func genSetup(pbDir, pbPkg string) error {
 			"pbPkg":          pbPkg,
 			"host":           defaultHost,
 			"port":           defaultPort,
-			"serverName":     GrpcProto.Service.Name,
+			"serverName":     util.Title(GrpcProto.Service.Name),
 		},
 	})
 }
