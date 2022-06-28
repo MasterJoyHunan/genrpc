@@ -19,8 +19,8 @@ func GenServer() error {
 
 	serverFmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
 	logicPath := pathx.JoinPackages(RootPkg, logicPacket, serverFmtName)
-	logicPkg := logicPath[strings.LastIndex(logicPath, "/")+1:]
-	logicPkgAlias := logicPkg + "Logic"
+	logicPkgAlias := logicPath[strings.LastIndex(logicPath, "/")+1:] + "Logic"
+
 	if err != nil {
 		return err
 	}
@@ -63,12 +63,12 @@ func (s *%sServer) %s (ctx context.Context, req *%s) (*%s, error) {
 	return sb.String()
 }
 
-func genServerImport(pbDir, logicPath, logicPkg string) string {
+func genServerImport(pbDir, logicDir, logicPkgAlias string) string {
 	importSet := collection.NewSet()
 	// pb pkg
 	importSet.AddStr(fmt.Sprintf("\"%s\"", pbDir))
 	// logic pkg
-	importSet.AddStr(fmt.Sprintf("%s \"%s\"", logicPkg, logicPath))
+	importSet.AddStr(fmt.Sprintf("%s \"%s\"", logicPkgAlias, logicDir))
 
 	imports := importSet.KeysStr()
 	sort.Strings(imports)
