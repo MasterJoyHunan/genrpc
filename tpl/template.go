@@ -20,4 +20,7 @@ var (
 
 	//go:embed server_setup.tpl
 	ServerSetupTemplate string
+
+	//go:embed rpc_client.tpl
+	RpcClientTemplate string
 )

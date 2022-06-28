@@ -12,8 +12,6 @@ import (
 	"github.com/zeromicro/go-zero/tools/goctl/util/format"
 )
 
-const ginEngineName = "e"
-
 func GenMain() error {
 	filename, err := format.FileNamingFormat("go_zero", GrpcProto.Package.Name)
 	if err != nil {

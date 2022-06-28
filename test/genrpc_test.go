@@ -50,3 +50,9 @@ func TestGenLogic(t *testing.T) {
 		t.Failed()
 	}
 }
+
+func TestGenClient(t *testing.T) {
+	if err := generator.GenClient(); err != nil {
+		t.Failed()
+	}
+}
