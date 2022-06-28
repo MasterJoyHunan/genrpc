@@ -4,14 +4,14 @@ package myrpc;
 option go_package="./proto/myrpc";
 
 
-message Request {
+message request {
   string ping = 1;
 }
 
-message Response {
+message response {
   string pong = 1;
 }
 
-service Myrpc {
-  rpc Ping(Request) returns(Response);
+service myrpc {
+  rpc ping(request) returns(response);
 }

@@ -10,7 +10,7 @@ import (
 
 func Setup() *grpc.Server {
 	rpcServer := grpc.NewServer()
-	myrpc.RegisterMyrpcServer(rpcServer, &MyrpcServer{})
+	myrpc.RegistermyrpcServer(rpcServer, &myrpcServer{})
 	listen, err := net.Listen("tcp", "127.0.0.1:8877")
 	if err != nil {
 		panic(err)

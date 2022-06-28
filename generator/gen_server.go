@@ -6,6 +6,7 @@ import (
 	"github.com/MasterJoyHunan/genrpc/tpl"
 	"github.com/emicklei/proto"
 	"github.com/zeromicro/go-zero/core/collection"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
 	"github.com/zeromicro/go-zero/tools/goctl/util/format"
 	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
 	"path"
@@ -34,7 +35,7 @@ func GenServer() error {
 		data: map[string]interface{}{
 			"importPackages": genServerImport(pbDir, logicPath, logicPkgAlias),
 			"pbPkg":          pbPkg,
-			"serverName":     GrpcProto.Service.Name,
+			"serverName":     util.Title(GrpcProto.Service.Name),
 			"func":           genFunc(pbPkg, logicPkgAlias),
 		},
 	})
@@ -52,12 +53,12 @@ func genFunc(pbPkg, logicPkg string) string {
 func (s *%sServer) %s (ctx context.Context, req *%s) (*%s, error) {
 	return %s.%s(req)
 }`,
-			GrpcProto.Service.Name,
-			rpc.Name,
-			pbPkg+"."+rpc.RequestType,
-			pbPkg+"."+rpc.ReturnsType,
+			util.Title(GrpcProto.Service.Name),
+			util.Title(rpc.Name),
+			pbPkg+"."+util.Title(rpc.RequestType),
+			pbPkg+"."+util.Title(rpc.ReturnsType),
 			logicPkg,
-			rpc.Name,
+			util.Title(rpc.Name),
 		))
 	}
 	return sb.String()

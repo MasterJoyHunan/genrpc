@@ -51,8 +51,8 @@ func genLogicByRpc(rpc *proto.RPC) error {
 			"pkgName":  fmtName[strings.LastIndex(fmtName, "/")+1:],
 			"imports":  fmt.Sprintf("\"%s\"", pbDir),
 			"function": util.Title(strings.TrimSuffix(logic, "Logic")),
-			"request":  fmt.Sprintf("%s.%s", pbPkg, rpc.RequestType),
-			"response": fmt.Sprintf("%s.%s", pbPkg, rpc.ReturnsType),
+			"request":  fmt.Sprintf("%s.%s", pbPkg, util.Title(rpc.RequestType)),
+			"response": fmt.Sprintf("%s.%s", pbPkg, util.Title(rpc.ReturnsType)),
 		},
 	})
 }
