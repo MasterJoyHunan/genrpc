@@ -1,9 +1,10 @@
 package test
 
 import (
+	"testing"
+
 	"github.com/MasterJoyHunan/genrpc/generator"
 	"github.com/MasterJoyHunan/genrpc/prepare"
-	"testing"
 )
 
 func TestMain(m *testing.M) {
@@ -53,6 +54,12 @@ func TestGenLogic(t *testing.T) {
 
 func TestGenClient(t *testing.T) {
 	if err := generator.GenClient(); err != nil {
+		t.Failed()
+	}
+}
+
+func TestGenSvc(t *testing.T) {
+	if err := generator.GenSvc(); err != nil {
 		t.Failed()
 	}
 }

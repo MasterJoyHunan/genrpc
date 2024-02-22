@@ -18,7 +18,7 @@ func Setup() {
 
 
 func setup(target string) *grpc.ClientConn {
-	timeout, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	timeout, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	dial, err := grpc.DialContext(timeout,
 		target,

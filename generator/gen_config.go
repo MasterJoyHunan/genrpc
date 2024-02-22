@@ -8,8 +8,8 @@ import (
 func GenConfig() error {
 	return genFile(fileGenConfig{
 		dir:             GrpcOutDir,
-		subDir:          configDir,
-		filename:        configPacket + ".go",
+		subDir:          "svc",
+		filename:        "grpc_context.go",
 		templateName:    "configTemplate",
 		builtinTemplate: tpl.ConfigTemplate,
 		data: map[string]interface{}{

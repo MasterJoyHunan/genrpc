@@ -23,4 +23,7 @@ var (
 
 	//go:embed rpc_client.tpl
 	RpcClientTemplate string
+
+	//go:embed grpc_context.tpl
+	GrpcContext string
 )

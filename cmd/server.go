@@ -1,11 +1,12 @@
 package cmd
 
 import (
+	"regexp"
+	"strings"
+
 	"github.com/MasterJoyHunan/genrpc/generator"
 	"github.com/MasterJoyHunan/genrpc/prepare"
 	"github.com/spf13/cobra"
-	"regexp"
-	"strings"
 )
 
 var serverCmd = &cobra.Command{
@@ -51,6 +52,12 @@ func GenRpcServer(cmd *cobra.Command, args []string) error {
 		}
 	}
 	if IfNeedGenerate("logic") {
+		if err := generator.GenLogic(); err != nil {
+			return err
+		}
+	}
+
+	if IfNeedGenerate("svc") {
 		if err := generator.GenLogic(); err != nil {
 			return err
 		}

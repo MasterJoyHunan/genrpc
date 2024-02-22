@@ -2,6 +2,11 @@ package generator
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"sort"
+	"strings"
+
 	. "github.com/MasterJoyHunan/genrpc/prepare"
 	"github.com/MasterJoyHunan/genrpc/tpl"
 	"github.com/emicklei/proto"
@@ -9,14 +14,14 @@ import (
 	"github.com/zeromicro/go-zero/tools/goctl/util"
 	"github.com/zeromicro/go-zero/tools/goctl/util/format"
 	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
-	"path"
-	"sort"
-	"strings"
 )
 
 func GenServer() error {
 	pbDir := path.Join(RootPkg, GrpcProto.GoPackage)
 	pbPkg := path.Base(pbDir)
+	filename := "server.go"
+
+	os.Remove(path.Join(GrpcOutDir, serverDir, filename))
 
 	serverFmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
 	logicPath := pathx.JoinPackages(RootPkg, logicPacket, serverFmtName)
@@ -29,7 +34,7 @@ func GenServer() error {
 	err = genFile(fileGenConfig{
 		dir:             GrpcOutDir,
 		subDir:          serverDir,
-		filename:        "server.go",
+		filename:        filename,
 		templateName:    "serverTemplate",
 		builtinTemplate: tpl.ServerTemplate,
 		data: map[string]interface{}{
@@ -51,7 +56,7 @@ func genFunc(pbPkg, logicPkg string) string {
 		rpc := e.(*proto.RPC)
 		sb.WriteString(fmt.Sprintf(`
 func (s *%sServer) %s (ctx context.Context, req *%s) (*%s, error) {
-	return %s.%s(req)
+	return %s.%s(svc.NewGrpcContext(ctx), req)
 }`,
 			util.Title(GrpcProto.Service.Name),
 			util.Title(rpc.Name),
@@ -66,6 +71,8 @@ func (s *%sServer) %s (ctx context.Context, req *%s) (*%s, error) {
 
 func genServerImport(pbDir, logicDir, logicPkgAlias string) string {
 	importSet := collection.NewSet()
+
+	importSet.AddStr(fmt.Sprintf("\"%s/svc\"", RootPkg))
 	// pb pkg
 	importSet.AddStr(fmt.Sprintf("\"%s\"", pbDir))
 	// logic pkg
