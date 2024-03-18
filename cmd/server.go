@@ -56,9 +56,8 @@ func GenRpcServer(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
-
 	if IfNeedGenerate("svc") {
-		if err := generator.GenLogic(); err != nil {
+		if err := generator.GenSvc(); err != nil {
 			return err
 		}
 	}
