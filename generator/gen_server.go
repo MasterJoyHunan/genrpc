@@ -1,102 +1,74 @@
 package generator
 
 import (
-	"fmt"
 	"os"
 	"path"
-	"sort"
-	"strings"
 
-	. "github.com/MasterJoyHunan/genrpc/prepare"
+	"github.com/MasterJoyHunan/genrpc/prepare"
 	"github.com/MasterJoyHunan/genrpc/tpl"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	"github.com/emicklei/proto"
-	"github.com/zeromicro/go-zero/core/collection"
-	"github.com/zeromicro/go-zero/tools/goctl/util"
 	"github.com/zeromicro/go-zero/tools/goctl/util/format"
-	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
 )
 
 func GenServer() error {
-	pbDir := path.Join(RootPkg, GrpcProto.GoPackage)
-	pbPkg := path.Base(pbDir)
-	filename := "server.go"
+	// 每次都重新生成
+	os.Remove(path.Join(prepare.GrpcOutDir, "server", "server.go"))
 
-	os.Remove(path.Join(GrpcOutDir, serverDir, filename))
+	pbPkg := path.Join(prepare.RootPkg, prepare.GrpcProto.GoPackage)
 
-	serverFmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
-	logicPath := pathx.JoinPackages(RootPkg, logicPacket, serverFmtName)
-	logicPkgAlias := logicPath[strings.LastIndex(logicPath, "/")+1:] + "Logic"
+	serverFmtName, err := format.FileNamingFormat(dirFmt, prepare.GrpcProto.Service.Name)
+	logicPkg := path.Join(prepare.RootPkg, "logic", serverFmtName)
+	logicPkgAlias := path.Base(logicPkg) + "Logic"
 
 	if err != nil {
 		return err
 	}
 
-	err = genFile(fileGenConfig{
-		dir:             GrpcOutDir,
-		subDir:          serverDir,
-		filename:        filename,
-		templateName:    "serverTemplate",
-		builtinTemplate: tpl.ServerTemplate,
-		data: map[string]interface{}{
-			"importPackages": genServerImport(pbDir, logicPath, logicPkgAlias),
-			"pbPkg":          pbPkg,
-			"serverName":     util.Title(GrpcProto.Service.Name),
-			"func":           genFunc(pbPkg, logicPkgAlias),
-		},
-	})
+	err = GenFile(
+		"server.go",
+		tpl.ServerTemplate,
+		WithSubDir("server"),
+		WithData(map[string]any{
+			"rootPkg":       prepare.RootPkg,
+			"pbPkg":         pbPkg,
+			"pbLastPkg":     path.Base(pbPkg),
+			"logicPkg":      logicPkg,
+			"logicPkgAlias": logicPkgAlias,
+			"serverName":    cases.Title(language.English).String(prepare.GrpcProto.Service.Name),
+			"funcArr":       genFunc(),
+		}),
+	)
 	if err != nil {
 		return err
 	}
-	return genSetup(pbDir, pbPkg)
+	return GenFile(
+		"setup.go",
+		tpl.ServerSetupTemplate,
+		WithSubDir("server"),
+		WithData(map[string]any{
+			"pbPkg":      pbPkg,
+			"pbLastPkg":  path.Base(pbPkg),
+			"host":       defaultHost,
+			"port":       defaultPort,
+			"serverName": cases.Title(language.English).String(prepare.GrpcProto.Service.Name),
+		}),
+	)
 }
 
-func genFunc(pbPkg, logicPkg string) string {
-	var sb strings.Builder
-	for _, e := range GrpcProto.Service.Elements {
+func genFunc() (arr []map[string]string) {
+	for _, e := range prepare.GrpcProto.Service.Elements {
+
 		rpc := e.(*proto.RPC)
-		sb.WriteString(fmt.Sprintf(`
-func (s *%sServer) %s (ctx context.Context, req *%s) (*%s, error) {
-	return %s.%s(svc.NewGrpcContext(ctx), req)
-}`,
-			util.Title(GrpcProto.Service.Name),
-			util.Title(rpc.Name),
-			pbPkg+"."+util.Title(rpc.RequestType),
-			pbPkg+"."+util.Title(rpc.ReturnsType),
-			logicPkg,
-			util.Title(rpc.Name),
-		))
+
+		arr = append(arr, map[string]string{
+			"comment":  rpc.Comment.Message(),
+			"funcName": cases.Title(language.English).String(rpc.Name),
+			"request":  cases.Title(language.English).String(rpc.RequestType),
+			"response": cases.Title(language.English).String(rpc.ReturnsType),
+		})
 	}
-	return sb.String()
-}
-
-func genServerImport(pbDir, logicDir, logicPkgAlias string) string {
-	importSet := collection.NewSet()
-
-	importSet.AddStr(fmt.Sprintf("\"%s/svc\"", RootPkg))
-	// pb pkg
-	importSet.AddStr(fmt.Sprintf("\"%s\"", pbDir))
-	// logic pkg
-	importSet.AddStr(fmt.Sprintf("%s \"%s\"", logicPkgAlias, logicDir))
-
-	imports := importSet.KeysStr()
-	sort.Strings(imports)
-
-	return strings.Join(imports, "\n\t")
-}
-
-func genSetup(pbDir, pbPkg string) error {
-	return genFile(fileGenConfig{
-		dir:             GrpcOutDir,
-		subDir:          serverDir,
-		filename:        "setup.go",
-		templateName:    "serverSetupTemplate",
-		builtinTemplate: tpl.ServerSetupTemplate,
-		data: map[string]interface{}{
-			"importPackages": fmt.Sprintf("\"%s\"", pbDir),
-			"pbPkg":          pbPkg,
-			"host":           defaultHost,
-			"port":           defaultPort,
-			"serverName":     util.Title(GrpcProto.Service.Name),
-		},
-	})
+	return
 }

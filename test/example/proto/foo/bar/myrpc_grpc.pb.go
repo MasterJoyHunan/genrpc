@@ -4,7 +4,7 @@
 // - protoc             v3.21.1
 // source: myrpc.proto
 
-package myrpc
+package bar
 
 import (
 	context "context"
@@ -22,7 +22,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MyrpcClient interface {
+	//*
+	//xxd sd sd sd
 	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	// pong comment
+	Pong(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 }
 
 type myrpcClient struct {
@@ -35,7 +39,16 @@ func NewMyrpcClient(cc grpc.ClientConnInterface) MyrpcClient {
 
 func (c *myrpcClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/myrpc.Myrpc/Ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/myrpc.myrpc/ping", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *myrpcClient) Pong(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/myrpc.myrpc/pong", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +59,11 @@ func (c *myrpcClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOp
 // All implementations must embed UnimplementedMyrpcServer
 // for forward compatibility
 type MyrpcServer interface {
+	//*
+	//xxd sd sd sd
 	Ping(context.Context, *Request) (*Response, error)
+	// pong comment
+	Pong(context.Context, *Request) (*Response, error)
 	mustEmbedUnimplementedMyrpcServer()
 }
 
@@ -56,6 +73,9 @@ type UnimplementedMyrpcServer struct {
 
 func (UnimplementedMyrpcServer) Ping(context.Context, *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedMyrpcServer) Pong(context.Context, *Request) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Pong not implemented")
 }
 func (UnimplementedMyrpcServer) mustEmbedUnimplementedMyrpcServer() {}
 
@@ -80,10 +100,28 @@ func _Myrpc_Ping_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/myrpc.Myrpc/Ping",
+		FullMethod: "/myrpc.myrpc/ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MyrpcServer).Ping(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Myrpc_Pong_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MyrpcServer).Pong(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/myrpc.myrpc/pong",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MyrpcServer).Pong(ctx, req.(*Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,12 +130,16 @@ func _Myrpc_Ping_Handler(srv interface{}, ctx context.Context, dec func(interfac
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Myrpc_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "myrpc.Myrpc",
+	ServiceName: "myrpc.myrpc",
 	HandlerType: (*MyrpcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Ping",
+			MethodName: "ping",
 			Handler:    _Myrpc_Ping_Handler,
+		},
+		{
+			MethodName: "pong",
+			Handler:    _Myrpc_Pong_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

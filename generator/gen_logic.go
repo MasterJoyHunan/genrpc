@@ -1,69 +1,53 @@
 package generator
 
 import (
-	"fmt"
 	"path"
-	"sort"
-	"strings"
 
-	"github.com/zeromicro/go-zero/core/collection"
-	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
-	. "github.com/MasterJoyHunan/genrpc/prepare"
+	"github.com/MasterJoyHunan/genrpc/prepare"
 	"github.com/MasterJoyHunan/genrpc/tpl"
 
 	"github.com/emicklei/proto"
-	"github.com/zeromicro/go-zero/tools/goctl/util"
 	"github.com/zeromicro/go-zero/tools/goctl/util/format"
 )
 
 func GenLogic() error {
-	for _, e := range GrpcProto.Service.Elements {
+	for _, e := range prepare.GrpcProto.Service.Elements {
+
 		rpc := e.(*proto.RPC)
-		err := genLogicByRpc(rpc)
+
+		filename, err := format.FileNamingFormat("go_zero", rpc.Name+"Logic")
+		if err != nil {
+			return err
+		}
+
+		serverName, err := format.FileNamingFormat(dirFmt, prepare.GrpcProto.Service.Name)
+		if err != nil {
+			return err
+		}
+
+		pbPkg := path.Join(prepare.RootPkg, prepare.GrpcProto.GoPackage)
+
+		err = GenFile(
+			filename+".go",
+			tpl.LogicTemplate,
+			WithSubDir(path.Join("logic", serverName)),
+			WithData(map[string]string{
+				"pkgName":   path.Base(serverName),
+				"rootPkg":   prepare.RootPkg,
+				"pbPkg":     pbPkg,
+				"pbLastPkg": path.Base(pbPkg),
+				"funcName":  cases.Title(language.English).String(rpc.Name),
+				"request":   cases.Title(language.English).String(rpc.RequestType),
+				"response":  cases.Title(language.English).String(rpc.ReturnsType),
+			}),
+		)
+
 		if err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func genLogicByRpc(rpc *proto.RPC) error {
-	logic := rpc.Name + "Logic"
-	filename, err := format.FileNamingFormat("go_zero", logic)
-	if err != nil {
-		return err
-	}
-
-	pbDir := path.Join(RootPkg, GrpcProto.GoPackage)
-	pbPkg := path.Base(pbDir)
-	svcDir := path.Join(RootPkg, "svc")
-
-	importSet := collection.NewSet()
-	importSet.AddStr(fmt.Sprintf("\"%s\"", pbDir))
-	importSet.AddStr(fmt.Sprintf("\"%s\"", svcDir))
-	imports := importSet.KeysStr()
-	sort.Strings(imports)
-	importsStr := strings.Join(imports, "\n\t")
-
-	fmtName, err := format.FileNamingFormat(dirFmt, GrpcProto.Service.Name)
-	if err != nil {
-		return err
-	}
-	dirPath := pathx.JoinPackages(logicDir, fmtName)
-
-	return genFile(fileGenConfig{
-		dir:             GrpcOutDir,
-		subDir:          dirPath,
-		filename:        filename + ".go",
-		templateName:    "logicTemplate",
-		builtinTemplate: tpl.LogicTemplate,
-		data: map[string]interface{}{
-			"pkgName":  fmtName[strings.LastIndex(fmtName, "/")+1:],
-			"imports":  importsStr,
-			"function": util.Title(strings.TrimSuffix(logic, "Logic")),
-			"request":  fmt.Sprintf("%s.%s", pbPkg, util.Title(rpc.RequestType)),
-			"response": fmt.Sprintf("%s.%s", pbPkg, util.Title(rpc.ReturnsType)),
-		},
-	})
 }

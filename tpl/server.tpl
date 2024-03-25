@@ -3,11 +3,19 @@ package server
 import (
     "context"
 
-    {{.importPackages}}
+    "{{.rootPkg}}/svc"
+    "{{.pbPkg}}"
+    {{.logicPkgAlias}} "{{.logicPkg}}"
 )
 
 type {{.serverName}}Server struct {
-    {{.pbPkg}}.Unimplemented{{.serverName}}Server
+    {{.pbLastPkg}}.Unimplemented{{.serverName}}Server
 }
 
-{{.func}}
+{{ range .funcArr -}}
+{{if .comment}}// {{.funcName}} {{ .comment}}{{end}}
+func (s *{{$.serverName}}Server) {{.funcName}} (ctx context.Context, req *{{$.pbLastPkg}}.{{.request}}) (*{{$.pbLastPkg}}.{{.response}}, error) {
+    return {{$.logicPkgAlias}}.{{.funcName}}(svc.NewGrpcContext(ctx), req)
+}
+
+{{ end -}}

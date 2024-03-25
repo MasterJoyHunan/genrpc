@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package myrpc;
-option go_package="./proto/myrpc";
+option go_package="proto/foo/bar";
 
 
 message request {
@@ -13,5 +13,11 @@ message response {
 }
 
 service myrpc {
+  /**
+  xxd sd sd sd
+   */
   rpc ping(request) returns(response);
+
+  // pong comment
+  rpc pong(request) returns(response);
 }

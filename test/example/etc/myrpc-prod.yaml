@@ -1,7 +1,7 @@
 Server:
   Name: myrpc
   Host: 127.0.0.1
-  Port: 8877
+  Port: 8887
 
 Mysql:
   Host:

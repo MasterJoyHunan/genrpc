@@ -1,5 +1,5 @@
 Server:
-  Name: {{.serviceName}}
+  Name: {{.serverName}}
   Host: {{.host}}
   Port: {{.port}}
 

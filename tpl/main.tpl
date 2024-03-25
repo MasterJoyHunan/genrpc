@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	{{.importPkg}}
+	"{{.rootPkg}}/server"
 )
 
 var release string
@@ -15,7 +15,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	// configFile := fmt.Sprintf("{{.etcDir}}/{{.configName}}-%s.yaml", release)
+	// configFile := fmt.Sprintf("etc/{{.serverName}}-%s.yaml", release)
 
-	{{.setup}}
+	server.Setup()
 }

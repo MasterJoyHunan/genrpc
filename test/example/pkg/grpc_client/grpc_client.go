@@ -12,13 +12,12 @@ import (
 )
 
 var (
-	// UserClient user.UserClient
+// UserClient user.UserClient
 )
 
 func Setup() {
 	// UserClient, err = user.NewUserClient(setup("127.0.0.1:8989"))
 }
-
 
 func setup(target string) (*grpc.ClientConn, error) {
 	timeout, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -32,7 +31,6 @@ func setup(target string) (*grpc.ClientConn, error) {
 			traceInterceptor(),
 		))
 }
-
 
 // error2NormalInterceptor 将 GRPC 错误替换为普通错误
 func error2NormalInterceptor() grpc.UnaryClientInterceptor {
@@ -56,7 +54,7 @@ func traceInterceptor() grpc.UnaryClientInterceptor {
 		}
 
 		value := ctx.Value("X-Request-Id")
-			if requestID, ok := value.(string); ok && requestID != "" {
+		if requestID, ok := value.(string); ok && requestID != "" {
 			md["X-Request-Id"] = []string{requestID}
 		}
 		return invoker(metadata.NewOutgoingContext(ctx, md), method, req, reply, cc, opts...)

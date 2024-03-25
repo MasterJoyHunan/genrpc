@@ -1,10 +1,11 @@
 package {{.pkgName}}
 
 import (
-	{{.imports}}
+	"{{.rootPkg}}/svc"
+	"{{.pbPkg}}"
 )
 
-func {{.function}}(ctx *svc.GrpcContext, req *{{.request}}) (reps *{{.response}}, err error) {
+func {{.funcName}}(ctx *svc.GrpcContext, req *{{.pbLastPkg}}.{{.request}}) (reps *{{.pbLastPkg}}.{{.response}}, err error) {
 	// todo: add your logic here and delete this line
 
 	return reps, nil
