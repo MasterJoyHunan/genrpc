@@ -12,7 +12,7 @@ go get -u github.com/MasterJoyHunan/genrpc
 ```
 go 1.16 及以上使用
 ```sh
-go install github.com/MasterJoyHunan/genrpc@v1.4.1
+go install github.com/MasterJoyHunan/genrpc@v1.4.5
 ```
 
 #### 初始化一个 GO 项目
@@ -31,7 +31,7 @@ xx.proto 文件内容示例
 syntax = "proto3";
 
 package myrpc;
-option go_package="./proto/myrpc";
+option go_package="proto/myrpc";
 
 
 message Request {
@@ -48,37 +48,42 @@ service Myrpc {
 
 ```
 
-#### 在项目下生成 grpc 项目(服务端)
+#### 在项目下生成 grpc 项目
 
 ```sh
-genrpc server xx.proto
+genrpc xx.proto
 # 全部命令
-genrpc server --dir=. --only=server,logic --without=pb xx.proto
+genrpc --dir=. --only=server,logic --without=pb xx.proto
 ```
+
+#### only 和 without 可选项
+
+用于只生成，或不生成某个文件的代码
+
+|参数|描述|
+|-|-|
+|pb|grpc 生成的 xx.pb.go 文件|
+|etc|yaml 配置文件|
+|config|etc 配置文件对应的 struct|
+|main|主程序|
+|server|grpc 服务端代码|
+|logic|业务文件|
+|svc|grpc 上下文|
+|client|grpc 客户端代码|
+
 
 #### 生成的目录结构如下
 
 ```
-├─config      # 配置文件对应的 struct
-├─etc         # yaml 配置文件
-├─logic       # 服务层
-├─proto       # protoc 生成的 pb 文件
-└─server      # grpc 服务端文件
-you-app.go    # main 文件
-```
-
-#### 在项目下生成 grpc 项目(客户端)
-
-```sh
-genrpc client xx.proto
-# 全部命令
-genrpc server --dir=. xx.proto
-```
-
-#### 生成的目录结构如下
-
-```
-├─rpcclient      # 客户端文件
+├─config         # 配置文件对应的 struct
+├─etc            # yaml 配置文件
+├─logic          # 逻辑层 - 编写业务代码的地方
+├─pkg            # 
+  └─grpc_client  # grpc 客户端调用文件 
+├─proto          # protoc 生成的 pb 文件
+├─server         # grpc 服务端文件
+└─svc            # svc 文件
+you-app.go       # 主程序
 ```
 
 ### 其他
