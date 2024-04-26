@@ -37,7 +37,7 @@ func GenServer() error {
 			"pbLastPkg":     path.Base(pbPkg),
 			"logicPkg":      logicPkg,
 			"logicPkgAlias": logicPkgAlias,
-			"serverName":    cases.Title(language.English).String(prepare.GrpcProto.Service.Name),
+			"serverName":    cases.Title(language.English, cases.NoLower).String(prepare.GrpcProto.Service.Name),
 			"funcArr":       genFunc(),
 		}),
 	)
@@ -53,7 +53,7 @@ func GenServer() error {
 			"pbLastPkg":  path.Base(pbPkg),
 			"host":       defaultHost,
 			"port":       defaultPort,
-			"serverName": cases.Title(language.English).String(prepare.GrpcProto.Service.Name),
+			"serverName": cases.Title(language.English, cases.NoLower).String(prepare.GrpcProto.Service.Name),
 		}),
 	)
 }
@@ -65,9 +65,9 @@ func genFunc() (arr []map[string]string) {
 
 		arr = append(arr, map[string]string{
 			"comment":  rpc.Comment.Message(),
-			"funcName": cases.Title(language.English).String(rpc.Name),
-			"request":  cases.Title(language.English).String(rpc.RequestType),
-			"response": cases.Title(language.English).String(rpc.ReturnsType),
+			"funcName": cases.Title(language.English, cases.NoLower).String(rpc.Name),
+			"request":  cases.Title(language.English, cases.NoLower).String(rpc.RequestType),
+			"response": cases.Title(language.English, cases.NoLower).String(rpc.ReturnsType),
 		})
 	}
 	return

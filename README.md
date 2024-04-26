@@ -12,7 +12,7 @@ go get -u github.com/MasterJoyHunan/genrpc
 ```
 go 1.16 及以上使用
 ```sh
-go install github.com/MasterJoyHunan/genrpc@v1.4.5
+go install github.com/MasterJoyHunan/genrpc@v1.4.6
 ```
 
 #### 初始化一个 GO 项目

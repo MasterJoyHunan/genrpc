@@ -39,9 +39,9 @@ func GenLogic() error {
 				"rootPkg":   prepare.RootPkg,
 				"pbPkg":     pbPkg,
 				"pbLastPkg": path.Base(pbPkg),
-				"funcName":  cases.Title(language.English).String(rpc.Name),
-				"request":   cases.Title(language.English).String(rpc.RequestType),
-				"response":  cases.Title(language.English).String(rpc.ReturnsType),
+				"funcName":  cases.Title(language.English, cases.NoLower).String(rpc.Name),
+				"request":   cases.Title(language.English, cases.NoLower).String(rpc.RequestType),
+				"response":  cases.Title(language.English, cases.NoLower).String(rpc.ReturnsType),
 			}),
 		)
 
