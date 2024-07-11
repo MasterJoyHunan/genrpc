@@ -55,9 +55,9 @@ func traceInterceptor() grpc.UnaryClientInterceptor {
 			md = metadata.Pairs()
 		}
 
-		value := ctx.Value("X-Request-Id")
+		value := ctx.Value("x-request-id")
 			if requestID, ok := value.(string); ok && requestID != "" {
-			md["X-Request-Id"] = []string{requestID}
+			md["x-request-id"] = []string{requestID}
 		}
 		return invoker(metadata.NewOutgoingContext(ctx, md), method, req, reply, cc, opts...)
 	}

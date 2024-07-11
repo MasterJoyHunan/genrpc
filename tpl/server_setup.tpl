@@ -48,15 +48,15 @@ func traceInterceptor() grpc.UnaryServerInterceptor {
             md = metadata.Pairs()
         }
         // Set request ID for context.
-        requestIDs := md["X-Request-Id"]
+        requestIDs := md["x-request-id"]
         if len(requestIDs) >= 1 {
-            ctx = context.WithValue(ctx, "X-Request-Id", requestIDs[0])
+            ctx = context.WithValue(ctx, "x-request-id", requestIDs[0])
             return handler(ctx, req)
         }
 
         // Generate request ID and set context if not exists.
         requestID := uuid.New().String()
-        ctx = context.WithValue(ctx, "X-Request-Id", requestID)
+        ctx = context.WithValue(ctx, "x-request-id", requestID)
 
         return handler(ctx, req)
     }
