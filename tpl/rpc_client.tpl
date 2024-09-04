@@ -1,4 +1,4 @@
-package rpcclient
+package grpc_client
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/backoff"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -27,6 +28,7 @@ func setup(target string) (*grpc.ClientConn, error) {
 		target,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
+		grpc.WithConnectParams(grpc.ConnectParams{Backoff: backoff.DefaultConfig}),
 		grpc.WithChainUnaryInterceptor(
 			error2NormalInterceptor(),
 			traceInterceptor(),
